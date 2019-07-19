@@ -59,10 +59,12 @@ export default {
     }
   },
   methods: {
+    //重置表单功能
     resetForm() {
       // console.log(this);
       this.$refs.loginRef.resetFields()
     },
+    //登录验证
     login() {
       this.$refs.loginRef.validate(async valid => {
         if (!valid) return

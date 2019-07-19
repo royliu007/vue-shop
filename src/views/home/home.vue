@@ -5,13 +5,12 @@
         <img src="./heima.png" alt />
         <span>电商后台管理系统</span>
       </div>
-      <el-button type="info" @click="logout">退出</el-button>
+      <el-button type="info" @click="logout" size="small">退出</el-button>
     </el-header>
     <el-container>
       <el-aside :width="isCollapse?'64px':'200px'">
         <div class="toggle-button" @click="toggleCollapse">|||</div>
         <el-menu
-          default-active="2"
           class="el-menu-vertical-demo"
           background-color="#333744 "
           text-color="#fff"
@@ -19,6 +18,8 @@
           :unique-opened="true"
           :collapse="isCollapse"
           :collapse-transition="false"
+          router
+          :default-active="activePath"
         >
           <!-- 一级菜单 -->
           <el-submenu :index="menu.id+''" v-for="menu in menus" :key="menu.id">
@@ -30,9 +31,10 @@
             <el-menu-item-group>
               <template slot="title"></template>
               <el-menu-item
-                :index="subMenu.id+''"
+                :index="'/'+subMenu.path"
                 v-for="subMenu in menu.children"
                 :key="subMenu.id"
+                @click="saveNavStatus('/'+subMenu.path)"
               >
                 <i class="el-icon-menu"></i>
                 {{subMenu.authName}}
@@ -41,7 +43,9 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -60,6 +64,7 @@ export default {
   }),
   created() {
     this.getMenus()
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     // 退出登录
@@ -74,11 +79,15 @@ export default {
         data: { data, meta }
       } = await this.$http.get('menus')
       if (meta.status !== 200) return this.$message.error(meta.msg)
-      console.log(data)
+      //console.log(data)
       this.menus = data
     },
     toggleCollapse() {
       this.isCollapse = !this.isCollapse
+    },
+    saveNavStatus(activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
   }
 }
@@ -113,7 +122,7 @@ export default {
   }
 }
 .el-main {
-  background-color: #bdc3c7;
+  background-color: #e1e9ee;
 }
 .toggle-button {
   background-color: #4a5064;
